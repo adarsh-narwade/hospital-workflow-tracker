@@ -1,0 +1,11 @@
+# Mac system files
+.DS_Store
+**/.DS_Store
+
+# Environment files
+.env
+**/.env
+
+# Dependencies
+node_modules/
+**/node_modules/

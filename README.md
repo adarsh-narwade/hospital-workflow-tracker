@@ -1,5 +1,11 @@
 # 🏥 Hospital Workflow Tracker
 
+## Live API
+**Base URL:** https://hospital-workflow-tracker.onrender.com
+
+Test it in your browser:
+https://hospital-workflow-tracker.onrender.com/health
+
 A REST API for managing hospital operations built from scratch with Node.js, Express, and MongoDB.
 
 ## Features

@@ -78,7 +78,7 @@ The current codebase includes these important fixes:
 From the backend folder:
 
 ```bash
-cd /Users/adarshnarwade/new-learning/hospital-workflow-tracker/backend
+cd hospital-workflow-tracker/backend
 npm install
 ```
 
@@ -109,12 +109,12 @@ curl http://localhost:5000/
 
 ### 2. Docs Web UI Setup
 
-The docs dashboard is a static frontend served from [`docs/index.html`](/Users/adarshnarwade/new-learning/hospital-workflow-tracker/docs/index.html).
+The docs dashboard is a static frontend served from [docs/index.html](docs/index.html).
 
 To use it locally:
 
 1. Keep the backend running on port `5000`
-2. Open [`docs/index.html`](/Users/adarshnarwade/new-learning/hospital-workflow-tracker/docs/index.html) in your browser
+2. Open [docs/index.html](docs/index.html) in your browser
 3. Hard refresh with `Cmd + Shift + R` after code changes
 
 The docs app automatically uses:
@@ -126,13 +126,14 @@ The docs app automatically uses:
 From the mobile folder:
 
 ```bash
-cd /Users/adarshnarwade/new-learning/hospital-workflow-tracker/mobile
+cd mobile
 npm install
 npx expo install react-dom react-native-web
 npx expo start --web --clear
 ```
 
-If you want the mobile app to use local backend data, set the base URL in [`api.js`](/Users/adarshnarwade/new-learning/hospital-workflow-tracker/mobile/src/services/api.js) to your local server.
+If you want the mobile app to use local backend data, set the base URL in [mobile/src/services/api.js](mobile/src/services/api.js)
+ to your local server.
 
 ## First-Time Access
 

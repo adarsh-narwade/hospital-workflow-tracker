@@ -6,337 +6,128 @@
   <title>Hospital Workflow Tracker</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F0F4F8; color: #111827; min-height: 100vh; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #F0F4F8;
-      color: #111827;
-      min-height: 100vh;
-    }
-
-    /* ── Auth ── */
-    #auth-page {
-      min-height: 100vh;
-      background: #1B5E7B;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .auth-box {
-      background: white;
-      border-radius: 16px;
-      padding: 40px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    .auth-logo { font-size: 52px; margin-bottom: 12px; }
-
-    .auth-title {
-      font-size: 24px;
-      font-weight: 700;
-      color: #1B5E7B;
-      margin-bottom: 4px;
-    }
-
-    .auth-sub {
-      font-size: 14px;
-      color: #6B7280;
-      margin-bottom: 28px;
-    }
-
-    .form-group { text-align: left; margin-bottom: 16px; }
-
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #111827;
-      margin-bottom: 6px;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid #E5E7EB;
-      border-radius: 10px;
-      font-size: 15px;
-      color: #111827;
-      background: #F9FAFB;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .form-group input:focus { border-color: #1B5E7B; }
-
-    .btn {
-      width: 100%;
-      padding: 14px;
-      background: #1B5E7B;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: opacity 0.2s;
-    }
-
+    /* Auth */
+    #auth-page { min-height: 100vh; background: #1B5E7B; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .auth-box { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 420px; }
+    .auth-logo { font-size: 52px; text-align: center; margin-bottom: 12px; }
+    .auth-title { font-size: 24px; font-weight: 700; color: #1B5E7B; text-align: center; margin-bottom: 4px; }
+    .auth-sub { font-size: 14px; color: #6B7280; text-align: center; margin-bottom: 28px; }
+    .auth-tabs { display: flex; gap: 0; margin-bottom: 24px; border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden; }
+    .auth-tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; color: #6B7280; background: #F9FAFB; border: none; transition: all 0.2s; }
+    .auth-tab.active { background: #1B5E7B; color: white; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 6px; }
+    .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 15px; color: #111827; background: #F9FAFB; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus { border-color: #1B5E7B; }
+    .password-field { position: relative; }
+    .password-field input { padding-right: 88px; }
+    .password-toggle { position: absolute; top: 50%; right: 10px; transform: translateY(-50%); border: none; background: transparent; color: #1B5E7B; font-size: 12px; font-weight: 700; cursor: pointer; padding: 4px 6px; }
+    .btn { width: 100%; padding: 14px; background: #1B5E7B; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: opacity 0.2s; }
     .btn:hover { opacity: 0.9; }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-secondary { background: #F3F4F6; color: #374151; }
+    .btn-danger { background: #FEE2E2; color: #B91C1C; }
+    .error-msg { color: #B91C1C; font-size: 13px; margin-top: 12px; text-align: center; }
+    .success-msg { color: #2E7D52; font-size: 13px; margin-top: 12px; text-align: center; }
 
-    .error-msg {
-      color: #B91C1C;
-      font-size: 13px;
-      margin-top: 12px;
-      text-align: center;
-    }
-
-    /* ── App ── */
+    /* Layout */
     #app-page { display: none; }
-
-    /* Sidebar */
     .layout { display: flex; min-height: 100vh; }
-
-    .sidebar {
-      width: 240px;
-      background: #1B5E7B;
-      padding: 24px 0;
-      position: fixed;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .sidebar-logo {
-      padding: 0 24px 24px;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
-      margin-bottom: 16px;
-    }
-
-    .sidebar-logo-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: white;
-      margin-top: 8px;
-    }
-
-    .sidebar-logo-sub {
-      font-size: 11px;
-      color: rgba(255,255,255,0.6);
-      margin-top: 2px;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 24px;
-      color: rgba(255,255,255,0.7);
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.2s;
-      border-left: 3px solid transparent;
-    }
-
+    .sidebar { width: 240px; background: #1B5E7B; padding: 24px 0; position: fixed; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
+    .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.15); margin-bottom: 16px; }
+    .sidebar-logo-title { font-size: 16px; font-weight: 700; color: white; margin-top: 8px; }
+    .sidebar-logo-sub { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+    .nav-section { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 24px 4px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
     .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
-
-    .nav-item.active {
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border-left-color: white;
-    }
-
-    .nav-icon { font-size: 18px; }
-
-    .sidebar-bottom {
-      margin-top: auto;
-      padding: 16px 24px;
-      border-top: 1px solid rgba(255,255,255,0.15);
-    }
-
+    .nav-item.active { background: rgba(255,255,255,0.15); color: white; border-left-color: white; }
+    .nav-icon { font-size: 16px; }
+    .sidebar-bottom { margin-top: auto; padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.15); }
     .user-info { color: white; margin-bottom: 10px; }
     .user-name { font-size: 14px; font-weight: 600; }
     .user-role { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; margin-top: 2px; }
-
-    .logout-btn {
-      width: 100%;
-      padding: 8px;
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
+    .logout-btn { width: 100%; padding: 8px; background: rgba(255,255,255,0.15); color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; transition: background 0.2s; }
     .logout-btn:hover { background: rgba(255,255,255,0.25); }
+    .main { margin-left: 240px; flex: 1; padding: 32px; }
+    .page-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 24px; }
 
-    /* Main content */
-    .main {
-      margin-left: 240px;
-      flex: 1;
-      padding: 32px;
-    }
-
-    .page-title {
-      font-size: 22px;
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 24px;
-    }
-
-    /* Stats grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      border-left: 4px solid;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
-
-    .stat-value {
-      font-size: 36px;
-      font-weight: 800;
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: white; border-radius: 12px; padding: 20px; border-left: 4px solid; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.1s; }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-value { font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
     .stat-label { font-size: 13px; color: #6B7280; }
 
+    /* Cards */
+    .content-card { background: white; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 20px; }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .card-header-title { font-size: 16px; font-weight: 600; }
+    .filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-btn { padding: 5px 14px; border: 1px solid #E5E7EB; border-radius: 999px; background: white; font-size: 12px; cursor: pointer; color: #6B7280; transition: all 0.2s; text-transform: capitalize; }
+    .filter-btn.active { background: #1B5E7B; border-color: #1B5E7B; color: white; }
+    .filter-btn:hover:not(.active) { border-color: #1B5E7B; color: #1B5E7B; }
+
     /* Table */
-    .table-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-      overflow: hidden;
-    }
-
-    .table-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #E5E7EB;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .table-header-title { font-size: 16px; font-weight: 600; }
-
-    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    .filter-btn {
-      padding: 6px 14px;
-      border: 1px solid #E5E7EB;
-      border-radius: 999px;
-      background: white;
-      font-size: 12px;
-      cursor: pointer;
-      color: #6B7280;
-      transition: all 0.2s;
-      text-transform: capitalize;
-    }
-
-    .filter-btn.active {
-      background: #1B5E7B;
-      border-color: #1B5E7B;
-      color: white;
-    }
-
     table { width: 100%; border-collapse: collapse; }
-
-    th {
-      text-align: left;
-      padding: 12px 20px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #6B7280;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background: #F9FAFB;
-      border-bottom: 1px solid #E5E7EB;
-    }
-
-    td {
-      padding: 14px 20px;
-      font-size: 14px;
-      border-bottom: 1px solid #F3F4F6;
-      color: #111827;
-    }
-
+    th { text-align: left; padding: 12px 20px; font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; background: #F9FAFB; border-bottom: 1px solid #E5E7EB; }
+    td { padding: 13px 20px; font-size: 14px; border-bottom: 1px solid #F3F4F6; color: #111827; vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: #F9FAFB; }
-
-    /* Badge */
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
+    .action-btn { padding: 5px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .action-btn:hover { opacity: 0.8; }
+    .btn-row { display: flex; gap: 6px; }
 
     /* Beds grid */
-    .beds-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
-      padding: 20px;
-    }
-
-    .bed-card {
-      background: #F9FAFB;
-      border: 1px solid #E5E7EB;
-      border-radius: 10px;
-      padding: 14px;
-    }
-
-    .bed-number { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .beds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 20px; }
+    .bed-card { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 14px; transition: border-color 0.2s; }
+    .bed-card:hover { border-color: #1B5E7B; }
+    .bed-number { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
     .bed-meta { font-size: 11px; color: #6B7280; margin-top: 2px; }
     .bed-patient { font-size: 11px; color: #1B5E7B; font-weight: 600; margin-top: 6px; }
 
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: #6B7280;
-      font-size: 14px;
-    }
+    /* Form panel */
+    .form-panel { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-left: 4px solid #1B5E7B; }
+    .form-panel-title { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: #111827; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .form-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .form-actions .btn { width: auto; padding: 10px 24px; margin-top: 0; }
 
-    .empty {
-      text-align: center;
-      padding: 40px;
-      color: #9CA3AF;
-      font-size: 14px;
-    }
+    /* Staff cards */
+    .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; padding: 20px; }
+    .staff-card { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 16px; }
+    .staff-avatar { width: 44px; height: 44px; border-radius: 50%; background: #1B5E7B; color: white; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .staff-name { font-size: 15px; font-weight: 600; }
+    .staff-dept { font-size: 12px; color: #6B7280; margin-top: 2px; }
 
-    /* Action btn */
-    .action-btn {
-      padding: 5px 12px;
-      border: none;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
+    /* Shift */
+    .shift-card { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .shift-info { flex: 1; }
+    .shift-name { font-size: 14px; font-weight: 600; }
+    .shift-meta { font-size: 12px; color: #6B7280; margin-top: 2px; }
 
-    .action-btn:hover { opacity: 0.8; }
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+    .modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+    .modal-actions .btn { width: auto; padding: 10px 20px; margin-top: 0; }
+
+    /* Misc */
+    .loading { text-align: center; padding: 40px; color: #6B7280; font-size: 14px; }
+    .empty { text-align: center; padding: 40px; color: #9CA3AF; font-size: 14px; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 11px; background: #F3F4F6; color: #6B7280; border: 1px solid #E5E7EB; margin-right: 4px; }
+    .divider { border: none; border-top: 1px solid #E5E7EB; margin: 16px 0; }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo-title, .sidebar-logo-sub, .nav-item span:last-child, .nav-section, .sidebar-bottom .user-info { display: none; }
+      .main { margin-left: 60px; padding: 16px; }
+      .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -348,46 +139,72 @@
     <div class="auth-title">Hospital Workflow</div>
     <div class="auth-sub">Staff Portal</div>
 
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="email" placeholder="you@hospital.com" />
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Register Staff</button>
     </div>
 
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="password" placeholder="••••••••" />
+    <!-- Login form -->
+    <div id="login-form">
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="you@hospital.com" /></div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="password-field">
+          <input type="password" id="login-password" placeholder="••••••••" />
+          <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">Show</button>
+        </div>
+      </div>
+      <div id="login-error" class="error-msg" style="display:none"></div>
+      <button class="btn" id="login-btn" onclick="login()">Sign In</button>
+      <p style="font-size:12px;color:#9CA3AF;text-align:center;margin-top:12px">Demo: admin@hospital.com / password123</p>
     </div>
 
-    <div id="login-error" class="error-msg" style="display:none"></div>
-    <button class="btn" id="login-btn" onclick="login()">Sign In</button>
+    <!-- Register form -->
+    <div id="register-form" style="display:none">
+      <div class="form-grid">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="reg-name" placeholder="Dr. Jane Smith" /></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="reg-email" placeholder="jane@hospital.com" /></div>
+        <div class="form-group">
+          <label>Password *</label>
+          <div class="password-field">
+            <input type="password" id="reg-password" placeholder="Min 6 characters" />
+            <button type="button" class="password-toggle" onclick="togglePassword('reg-password', this)">Show</button>
+          </div>
+        </div>
+        <div class="form-group"><label>Role *</label>
+          <select id="reg-role">
+            <option value="nurse">Nurse</option>
+            <option value="doctor">Doctor</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1"><label>Department</label><input type="text" id="reg-dept" placeholder="Cardiology" /></div>
+      </div>
+      <div id="reg-error" class="error-msg" style="display:none"></div>
+      <div id="reg-success" class="success-msg" style="display:none"></div>
+      <button class="btn" onclick="registerStaff()">Create Account</button>
+    </div>
   </div>
 </div>
 
 <!-- APP PAGE -->
 <div id="app-page">
   <div class="layout">
-
-    <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-logo">
         <div style="font-size:28px">🏥</div>
         <div class="sidebar-logo-title">Hospital Tracker</div>
         <div class="sidebar-logo-sub">Staff Portal</div>
       </div>
-
-      <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
-        <span class="nav-icon">🏠</span> Dashboard
-      </div>
-      <div class="nav-item" onclick="showPage('patients')" id="nav-patients">
-        <span class="nav-icon">🛏</span> Patients
-      </div>
-      <div class="nav-item" onclick="showPage('beds')" id="nav-beds">
-        <span class="nav-icon">🗺</span> Beds
-      </div>
-      <div class="nav-item" onclick="showPage('tasks')" id="nav-tasks">
-        <span class="nav-icon">📋</span> Tasks
-      </div>
-
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard"><span class="nav-icon">🏠</span><span>Dashboard</span></div>
+      <div class="nav-section">Clinical</div>
+      <div class="nav-item" onclick="showPage('patients')" id="nav-patients"><span class="nav-icon">🛏</span><span>Patients</span></div>
+      <div class="nav-item" onclick="showPage('beds')" id="nav-beds"><span class="nav-icon">🗺</span><span>Beds</span></div>
+      <div class="nav-item" onclick="showPage('tasks')" id="nav-tasks"><span class="nav-icon">📋</span><span>Tasks</span></div>
+      <div class="nav-section">Staff</div>
+      <div class="nav-item" onclick="showPage('staff')" id="nav-staff"><span class="nav-icon">👥</span><span>Staff</span></div>
+      <div class="nav-item" onclick="showPage('shifts')" id="nav-shifts"><span class="nav-icon">🗓</span><span>Shifts</span></div>
       <div class="sidebar-bottom">
         <div class="user-info">
           <div class="user-name" id="sidebar-name">—</div>
@@ -397,578 +214,24 @@
       </div>
     </div>
 
-    <!-- Main -->
     <div class="main" id="main-content">
       <div class="loading">Loading...</div>
     </div>
-
   </div>
 </div>
 
-<script>
-  const API = "https://hospital-workflow-tracker.onrender.com/api";
-  let token = localStorage.getItem("jwt") || null;
-  let currentUser = null;
-  let currentFilter = { patients: "admitted", tasks: "pending", beds: null };
-
-  const STATUS_COLORS = {
-    admitted:    { bg: "#E8F4F9", color: "#0D3D52" },
-    discharged:  { bg: "#F3F4F6", color: "#6B7280" },
-    critical:    { bg: "#FEE2E2", color: "#B91C1C" },
-    transferred: { bg: "#FEF3C7", color: "#B45309" },
-    available:   { bg: "#E6F4EC", color: "#2E7D52" },
-    occupied:    { bg: "#FEE2E2", color: "#B91C1C" },
-    cleaning:    { bg: "#FEF3C7", color: "#B45309" },
-    maintenance: { bg: "#F3F4F6", color: "#6B7280" },
-    pending:     { bg: "#F3F4F6", color: "#6B7280" },
-    in_progress: { bg: "#E8F4F9", color: "#0D3D52" },
-    completed:   { bg: "#E6F4EC", color: "#2E7D52" },
-    cancelled:   { bg: "#FEE2E2", color: "#B91C1C" },
-    low:         { bg: "#F3F4F6", color: "#6B7280" },
-    medium:      { bg: "#E8F4F9", color: "#0D3D52" },
-    high:        { bg: "#FEF3C7", color: "#B45309" },
-    urgent:      { bg: "#FEE2E2", color: "#B91C1C" },
-  };
-
-  function badge(status) {
-    const s = STATUS_COLORS[status] || { bg: "#F3F4F6", color: "#6B7280" };
-    return `<span class="badge" style="background:${s.bg};color:${s.color}">${status}</span>`;
-  }
-
-  async function api(path, options = {}) {
-    const res = await fetch(API + path, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...(options.headers || {}),
-      },
-    });
-    return res.json();
-  }
-
-  // ── Auth ──────────────────────────────────────────────
-  async function login() {
-    const email    = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const btn      = document.getElementById("login-btn");
-    const err      = document.getElementById("login-error");
-
-    if (!email || !password) {
-      err.textContent = "Please fill in all fields";
-      err.style.display = "block";
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = "Signing in...";
-    err.style.display = "none";
-
-    const data = await api("/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (data.token) {
-      token = data.token;
-      currentUser = data.user;
-      localStorage.setItem("jwt", token);
-      showApp();
-    } else {
-      err.textContent = data.message || "Login failed";
-      err.style.display = "block";
-      btn.disabled = false;
-      btn.textContent = "Sign In";
-    }
-  }
-
-  function logout() {
-    token = null;
-    currentUser = null;
-    localStorage.removeItem("jwt");
-    document.getElementById("auth-page").style.display = "flex";
-    document.getElementById("app-page").style.display = "none";
-  }
-
-  async function showApp() {
-    document.getElementById("auth-page").style.display = "none";
-    document.getElementById("app-page").style.display = "block";
-
-    if (!currentUser) {
-      const data = await api("/auth/me");
-      currentUser = data.user;
-    }
-
-    document.getElementById("sidebar-name").textContent = currentUser?.name || "—";
-    document.getElementById("sidebar-role").textContent = currentUser?.role || "—";
-
-    showPage("dashboard");
-  }
-
-  // ── Navigation ────────────────────────────────────────
-  function showPage(page) {
-    document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
-    document.getElementById("nav-" + page).classList.add("active");
-
-    if (page === "dashboard") renderDashboard();
-    if (page === "patients")  renderPatients();
-    if (page === "beds")      renderBeds();
-    if (page === "tasks")     renderTasks();
-  }
-
-  // ── Dashboard ─────────────────────────────────────────
-  async function renderDashboard() {
-    const main = document.getElementById("main-content");
-    main.innerHTML = `<div class="page-title">Dashboard</div><div class="loading">Loading stats...</div>`;
-
-    const [patients, beds, tasks] = await Promise.all([
-      api("/patients?status=admitted"),
-      api("/beds?status=available"),
-      api("/tasks?status=pending"),
-    ]);
-
-    const critical = Array.isArray(patients) ? patients.filter(p => p.status === "critical").length : 0;
-
-    main.innerHTML = `
-      <div class="page-title">Good day, ${currentUser?.name || ""}!</div>
-      <div class="stats-grid">
-        <div class="stat-card" style="border-color:#1B5E7B">
-          <div class="stat-value" style="color:#1B5E7B">${Array.isArray(patients) ? patients.length : 0}</div>
-          <div class="stat-label">Admitted Patients</div>
-        </div>
-        <div class="stat-card" style="border-color:#B91C1C">
-          <div class="stat-value" style="color:#B91C1C">${critical}</div>
-          <div class="stat-label">Critical</div>
-        </div>
-        <div class="stat-card" style="border-color:#2E7D52">
-          <div class="stat-value" style="color:#2E7D52">${Array.isArray(beds) ? beds.length : 0}</div>
-          <div class="stat-label">Available Beds</div>
-        </div>
-        <div class="stat-card" style="border-color:#B45309">
-          <div class="stat-value" style="color:#B45309">${Array.isArray(tasks) ? tasks.length : 0}</div>
-          <div class="stat-label">Pending Tasks</div>
-        </div>
-      </div>
-      <div class="table-card">
-        <div class="table-header"><div class="table-header-title">Recent Patients</div></div>
-        <table>
-          <thead><tr><th>Name</th><th>Ward</th><th>Status</th><th>Admitted</th></tr></thead>
-          <tbody>
-            ${Array.isArray(patients) && patients.length > 0
-              ? patients.slice(0, 5).map(p => `
-                <tr>
-                  <td><strong>${p.name}</strong></td>
-                  <td>${p.ward}</td>
-                  <td>${badge(p.status)}</td>
-                  <td>${new Date(p.admittedAt).toLocaleDateString()}</td>
-                </tr>`).join("")
-              : `<tr><td colspan="4" class="empty">No admitted patients</td></tr>`
-            }
-          </tbody>
-        </table>
-      </div>
-    `;
-  }
-
-  // ── Patients ──────────────────────────────────────────
-  async function renderPatients(filter = currentFilter.patients) {
-    currentFilter.patients = filter;
-    const main = document.getElementById("main-content");
-    main.innerHTML = `<div class="page-title">Patients</div><div class="loading">Loading...</div>`;
-
-    const patients = await api(`/patients?status=${filter}`);
-
-    main.innerHTML = `
-      <div class="page-title">Patients</div>
-      <div class="table-card">
-        <div class="table-header">
-          <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-  <div class="table-header-title">All Patients</div>
-  <button class="action-btn" style="background:#1B5E7B;color:white;padding:8px 16px;font-size:13px" onclick="showAdmitForm()">+ Admit Patient</button>
+<!-- MODAL -->
+<div id="modal-overlay" class="modal-overlay" style="display:none" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-title" id="modal-title">Modal</div>
+    <div id="modal-body"></div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
 </div>
-          <div class="filter-row">
-            ${["admitted","critical","discharged","transferred"].map(f => `
-              <button class="filter-btn ${filter === f ? "active" : ""}"
-                onclick="renderPatients('${f}')">${f}</button>
-            `).join("")}
-          </div>
-        </div>
-        <table>
-          <thead><tr><th>Name</th><th>Ward</th><th>Diagnosis</th><th>Status</th><th>Admitted</th><th>Action</th></tr></thead>
-          <tbody>
-            ${Array.isArray(patients) && patients.length > 0
-              ? patients.map(p => `
-                <tr>
-                  <td><strong>${p.name}</strong></td>
-                  <td>${p.ward}</td>
-                  <td>${p.diagnosis || "—"}</td>
-                  <td>${badge(p.status)}</td>
-                  <td>${new Date(p.admittedAt).toLocaleDateString()}</td>
-                  <td>
-                    ${p.status === "admitted"
-                      ? `<button class="action-btn" style="background:#FEE2E2;color:#B91C1C"
-                           onclick="dischargePatient('${p._id}')">Discharge</button>`
-                      : "—"}
-                  </td>
-                </tr>`).join("")
-              : `<tr><td colspan="6" class="empty">No ${filter} patients</td></tr>`
-            }
-          </tbody>
-        </table>
-      </div>
-    `;
-  }
 
-  function showAdmitForm() {
-  const main = document.getElementById("main-content");
-  const form = document.getElementById("admit-form-container");
-  if (form) { form.remove(); return; }
-
-  const container = document.createElement("div");
-  container.id = "admit-form-container";
-  container.style.cssText = "background:white;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)";
-  container.innerHTML = `
-    <h3 style="font-size:16px;font-weight:600;margin-bottom:16px">Admit New Patient</h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group">
-        <label>Full Name *</label>
-        <input type="text" id="p-name" placeholder="Jane Doe" />
-      </div>
-      <div class="form-group">
-        <label>Date of Birth *</label>
-        <input type="date" id="p-dob" />
-      </div>
-      <div class="form-group">
-        <label>Gender *</label>
-        <select id="p-gender" style="width:100%;padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;background:#F9FAFB">
-          <option value="">Select...</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Ward *</label>
-        <input type="text" id="p-ward" placeholder="Cardiology" />
-      </div>
-      <div class="form-group">
-        <label>Diagnosis</label>
-        <input type="text" id="p-diagnosis" placeholder="Hypertension" />
-      </div>
-      <div class="form-group">
-        <label>Status</label>
-        <select id="p-status" style="width:100%;padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;background:#F9FAFB">
-          <option value="admitted">Admitted</option>
-          <option value="critical">Critical</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn" style="width:auto;padding:10px 24px" onclick="submitAdmitPatient()">Admit Patient</button>
-      <button class="btn" style="width:auto;padding:10px 24px;background:#F3F4F6;color:#374151" onclick="showAdmitForm()">Cancel</button>
-    </div>
-    <div id="admit-error" class="error-msg" style="display:none"></div>
-  `;
-
-  main.insertBefore(container, main.children[1]);
-}
-
-async function submitAdmitPatient() {
-  const name      = document.getElementById("p-name").value.trim();
-  const dob       = document.getElementById("p-dob").value;
-  const gender    = document.getElementById("p-gender").value;
-  const ward      = document.getElementById("p-ward").value.trim();
-  const diagnosis = document.getElementById("p-diagnosis").value.trim();
-  const status    = document.getElementById("p-status").value;
-  const err       = document.getElementById("admit-error");
-
-  if (!name || !dob || !gender || !ward) {
-    err.textContent = "Please fill in all required fields";
-    err.style.display = "block";
-    return;
-  }
-
-  const data = await api("/patients", {
-    method: "POST",
-    body: JSON.stringify({ name, dateOfBirth: dob, gender, ward, diagnosis, status }),
-  });
-
-  if (data._id || data.patient) {
-    showAdmitForm(); // close form
-    renderPatients(); // refresh list
-  } else {
-    err.textContent = data.message || "Failed to admit patient";
-    err.style.display = "block";
-  }
-}
-
-  async function dischargePatient(id) {
-    if (!confirm("Discharge this patient?")) return;
-    await api(`/patients/${id}/discharge`, { method: "PATCH" });
-    renderPatients();
-  }
-
-  // ── Beds ──────────────────────────────────────────────
-  function showBedForm() {
-  const main = document.getElementById("main-content");
-  const form = document.getElementById("bed-form-container");
-  if (form) { form.remove(); return; }
-
-  const container = document.createElement("div");
-  container.id = "bed-form-container";
-  container.style.cssText = "background:white;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)";
-  container.innerHTML = `
-    <h3 style="font-size:16px;font-weight:600;margin-bottom:16px">Add New Bed</h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group">
-        <label>Bed Number *</label>
-        <input type="text" id="b-number" placeholder="A101" />
-      </div>
-      <div class="form-group">
-        <label>Room *</label>
-        <input type="text" id="b-room" placeholder="101" />
-      </div>
-      <div class="form-group">
-        <label>Floor *</label>
-        <input type="number" id="b-floor" placeholder="1" />
-      </div>
-      <div class="form-group">
-        <label>Ward *</label>
-        <input type="text" id="b-ward" placeholder="Cardiology" />
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn" style="width:auto;padding:10px 24px" onclick="submitAddBed()">Add Bed</button>
-      <button class="btn" style="width:auto;padding:10px 24px;background:#F3F4F6;color:#374151" onclick="showBedForm()">Cancel</button>
-    </div>
-    <div id="bed-error" class="error-msg" style="display:none"></div>
-  `;
-
-  main.insertBefore(container, main.children[1]);
-}
-
-async function submitAddBed() {
-  const bedNumber = document.getElementById("b-number").value.trim();
-  const room      = document.getElementById("b-room").value.trim();
-  const floor     = document.getElementById("b-floor").value;
-  const ward      = document.getElementById("b-ward").value.trim();
-  const err       = document.getElementById("bed-error");
-
-  if (!bedNumber || !room || !floor || !ward) {
-    err.textContent = "Please fill in all required fields";
-    err.style.display = "block";
-    return;
-  }
-
-  const data = await api("/beds", {
-    method: "POST",
-    body: JSON.stringify({ bedNumber, room, floor: parseInt(floor), ward }),
-  });
-
-  if (data._id || data.bed) {
-    showBedForm();
-    renderBeds();
-  } else {
-    err.textContent = data.message || "Failed to add bed";
-    err.style.display = "block";
-  }
-}
-
-  async function renderBeds(filter = currentFilter.beds) {
-    currentFilter.beds = filter;
-    const main = document.getElementById("main-content");
-    main.innerHTML = `<div class="page-title">Beds</div><div class="loading">Loading...</div>`;
-
-    const url   = filter ? `/beds?status=${filter}` : "/beds";
-    const beds  = await api(url);
-    const stats = await api("/beds/stats");
-
-    const BED_ICONS = { available:"🟢", occupied:"🔴", cleaning:"🟡", maintenance:"⚫" };
-
-    main.innerHTML = `
-      <div class="page-title">Bed Management</div>
-      <div class="stats-grid" style="margin-bottom:20px">
-        ${Array.isArray(stats) ? stats.map(s => `
-          <div class="stat-card" style="border-color:#1B5E7B">
-            <div class="stat-value" style="color:#1B5E7B;font-size:28px">${s.count}</div>
-            <div class="stat-label" style="text-transform:capitalize">${s._id}</div>
-          </div>`).join("") : ""}
-      </div>
-      <div class="table-card">
-        <div class="table-header">
-          <div style="display:flex;align-items:center;justify-content:space-between;width:100%"><div class="table-header-title">All Beds</div><button class="action-btn" style="background:#1B5E7B;color:white;padding:8px 16px;font-size:13px" onclick="showBedForm()">+ Add Bed</button></div>
-          <div class="filter-row">
-            ${[null,"available","occupied","cleaning","maintenance"].map(f => `
-              <button class="filter-btn ${filter === f ? "active" : ""}"
-                onclick="renderBeds(${f ? `'${f}'` : 'null'})">${f || "all"}</button>
-            `).join("")}
-          </div>
-        </div>
-        <div class="beds-grid">
-          ${Array.isArray(beds) && beds.length > 0
-            ? beds.map(b => `
-              <div class="bed-card">
-                <div class="bed-number">${BED_ICONS[b.status] || "⬜"} ${b.bedNumber}</div>
-                ${badge(b.status)}
-                <div class="bed-meta">Room ${b.room} · Floor ${b.floor}</div>
-                <div class="bed-meta">Ward: ${b.ward}</div>
-                ${b.currentPatient ? `<div class="bed-patient">👤 ${b.currentPatient.name}</div>` : ""}
-              </div>`).join("")
-            : `<div class="empty" style="grid-column:1/-1">No beds found</div>`
-          }
-        </div>
-      </div>
-    `;
-  }
-
-  // ── Tasks ─────────────────────────────────────────────
-  async function renderTasks(filter = currentFilter.tasks) {
-    currentFilter.tasks = filter;
-    const main = document.getElementById("main-content");
-    main.innerHTML = `<div class="page-title">Tasks</div><div class="loading">Loading...</div>`;
-
-    const tasks = await api(`/tasks?status=${filter}`);
-    const TYPE_ICONS = { medication:"💊", lab_order:"🧪", procedure:"🩺", general:"📋", emergency:"🚑" };
-
-    main.innerHTML = `
-      <div class="page-title">Tasks & Orders</div>
-      <div class="table-card">
-        <div class="table-header">
-          <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-  <div class="table-header-title">All Tasks</div>
-  <button class="action-btn" style="background:#1B5E7B;color:white;padding:8px 16px;font-size:13px" onclick="showTaskForm()">+ Create Task</button>
-</div>
-          <div class="filter-row">
-            ${["pending","in_progress","completed","cancelled"].map(f => `
-              <button class="filter-btn ${filter === f ? "active" : ""}"
-                onclick="renderTasks('${f}')">${f.replace("_"," ")}</button>
-            `).join("")}
-          </div>
-        </div>
-        <table>
-          <thead><tr><th>Title</th><th>Type</th><th>Priority</th><th>Status</th><th>Assigned To</th><th>Action</th></tr></thead>
-          <tbody>
-            ${Array.isArray(tasks) && tasks.length > 0
-              ? tasks.map(t => `
-                <tr>
-                  <td><strong>${TYPE_ICONS[t.type] || "📋"} ${t.title}</strong></td>
-                  <td style="text-transform:capitalize">${t.type?.replace("_"," ") || "—"}</td>
-                  <td>${badge(t.priority)}</td>
-                  <td>${badge(t.status)}</td>
-                  <td>${t.assignedTo?.name || "—"}</td>
-                  <td>
-                    ${t.status === "pending"
-                      ? `<button class="action-btn" style="background:#E8F4F9;color:#0D3D52"
-                           onclick="updateTask('${t._id}','in_progress')">Start</button>`
-                      : t.status === "in_progress"
-                      ? `<button class="action-btn" style="background:#E6F4EC;color:#2E7D52"
-                           onclick="updateTask('${t._id}','completed')">Complete</button>`
-                      : "—"}
-                  </td>
-                </tr>`).join("")
-              : `<tr><td colspan="6" class="empty">No ${filter.replace("_"," ")} tasks</td></tr>`
-            }
-          </tbody>
-        </table>
-      </div>
-    `;
-  }
-
-  function showTaskForm() {
-  const main = document.getElementById("main-content");
-  const form = document.getElementById("task-form-container");
-  if (form) { form.remove(); return; }
-
-  const container = document.createElement("div");
-  container.id = "task-form-container";
-  container.style.cssText = "background:white;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)";
-  container.innerHTML = `
-    <h3 style="font-size:16px;font-weight:600;margin-bottom:16px">Create New Task</h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group">
-        <label>Title *</label>
-        <input type="text" id="t-title" placeholder="Blood pressure check" />
-      </div>
-      <div class="form-group">
-        <label>Type</label>
-        <select id="t-type" style="width:100%;padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;background:#F9FAFB">
-          <option value="general">General</option>
-          <option value="medication">Medication</option>
-          <option value="lab_order">Lab Order</option>
-          <option value="procedure">Procedure</option>
-          <option value="emergency">Emergency</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Priority</label>
-        <select id="t-priority" style="width:100%;padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;background:#F9FAFB">
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="urgent">Urgent</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Description</label>
-        <input type="text" id="t-desc" placeholder="Optional details" />
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn" style="width:auto;padding:10px 24px" onclick="submitCreateTask()">Create Task</button>
-      <button class="btn" style="width:auto;padding:10px 24px;background:#F3F4F6;color:#374151" onclick="showTaskForm()">Cancel</button>
-    </div>
-    <div id="task-error" class="error-msg" style="display:none"></div>
-  `;
-
-  main.insertBefore(container, main.children[1]);
-}
-
-async function submitCreateTask() {
-  const title       = document.getElementById("t-title").value.trim();
-  const type        = document.getElementById("t-type").value;
-  const priority    = document.getElementById("t-priority").value;
-  const description = document.getElementById("t-desc").value.trim();
-  const err         = document.getElementById("task-error");
-
-  if (!title) {
-    err.textContent = "Please enter a task title";
-    err.style.display = "block";
-    return;
-  }
-
-  const data = await api("/tasks", {
-    method: "POST",
-    body: JSON.stringify({ title, type, priority, description }),
-  });
-
-  if (data._id || data.task) {
-    showTaskForm();
-    renderTasks();
-  } else {
-    err.textContent = data.message || "Failed to create task";
-    err.style.display = "block";
-  }
-}
-
-  async function updateTask(id, status) {
-    await api(`/tasks/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    });
-    renderTasks();
-  }
-
-  // ── Init ──────────────────────────────────────────────
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      const authVisible = document.getElementById("auth-page").style.display !== "none";
-      if (authVisible) login();
-    }
-  });
-
-  if (token) {
-    showApp();
-  }
-</script>
+<script src="./js/shared.js"></script>
+<script src="./js/auth.js"></script>
+<script src="./js/pages.js"></script>
+<script src="./js/main.js"></script>
 </body>
 </html>

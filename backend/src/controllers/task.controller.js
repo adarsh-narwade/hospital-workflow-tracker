@@ -71,6 +71,8 @@ exports.update = async (req, res) => {
     // automatically record the exact time it was completed
     if (req.body.status === "completed") {
       req.body.completedAt = new Date();
+    } else if (req.body.status) {
+      req.body.completedAt = null;
     }
 
     const task = await Task.findByIdAndUpdate(

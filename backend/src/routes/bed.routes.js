@@ -15,6 +15,6 @@ router.get("/:id", getOne);       // GET  /api/beds/:id
 // protect runs first (checks token), then authorize (checks role)
 router.post("/", authorize("admin"), create);  // POST /api/beds
 
-router.patch("/:id", update);     // PATCH /api/beds/:id
+router.patch("/:id", authorize("admin"), update);     // PATCH /api/beds/:id
 
 module.exports = router;

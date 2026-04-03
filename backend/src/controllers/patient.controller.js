@@ -1,6 +1,66 @@
 const Patient = require("../models/Patient");
 const Bed = require("../models/Bed");
 
+const createError = (statusCode, message) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+};
+
+const getBedById = async (bedId) => {
+  const bed = await Bed.findById(bedId);
+
+  if (!bed) {
+    throw createError(404, "Assigned bed not found");
+  }
+
+  return bed;
+};
+
+const ensureBedIsAssignable = (bed, patientId = null) => {
+  const currentPatientId = bed.currentPatient ? String(bed.currentPatient) : null;
+  const allowedPatientId = patientId ? String(patientId) : null;
+  const isAlreadyAssignedToPatient =
+    allowedPatientId && currentPatientId === allowedPatientId;
+
+  if (currentPatientId && !isAlreadyAssignedToPatient) {
+    throw createError(400, "Bed is already assigned to another patient");
+  }
+
+  if (bed.status !== "available" && !isAlreadyAssignedToPatient) {
+    throw createError(400, "Bed is not available for assignment");
+  }
+};
+
+const claimBedForPatient = async (bedId, patientId, currentPatientId = null) => {
+  const bedFilters = [{ status: "available", currentPatient: null }];
+
+  if (currentPatientId) {
+    bedFilters.push({ currentPatient: currentPatientId });
+  }
+
+  const claimedBed = await Bed.findOneAndUpdate(
+    {
+      _id: bedId,
+      $or: bedFilters,
+    },
+    {
+      status: "occupied",
+      currentPatient: patientId,
+    },
+    { new: true }
+  );
+
+  if (claimedBed) {
+    return claimedBed;
+  }
+
+  const bed = await getBedById(bedId);
+  ensureBedIsAssignable(bed, currentPatientId);
+
+  return bed;
+};
+
 // GET /api/patients
 // Returns all patients — can filter by ward or status via query params
 // Example: /api/patients?ward=ICU&status=admitted
@@ -50,14 +110,21 @@ exports.getOne = async (req, res) => {
 // Admits a new patient
 exports.create = async (req, res) => {
   try {
+    if (req.body.bedId) {
+      const assignedBed = await getBedById(req.body.bedId);
+      ensureBedIsAssignable(assignedBed);
+    }
+
     const patient = await Patient.create(req.body);
 
     // If a bed was assigned during admission, mark that bed as occupied
-    if (patient.bedId) {
-      await Bed.findByIdAndUpdate(patient.bedId, {
-        status: "occupied",
-        currentPatient: patient._id,
-      });
+    if (req.body.bedId) {
+      try {
+        await claimBedForPatient(req.body.bedId, patient._id);
+      } catch (err) {
+        await Patient.findByIdAndDelete(patient._id);
+        throw err;
+      }
     }
 
     res.status(201).json({
@@ -65,7 +132,7 @@ exports.create = async (req, res) => {
       patient,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
 
@@ -73,16 +140,53 @@ exports.create = async (req, res) => {
 // Updates any patient fields (ward, diagnosis, notes, etc.)
 exports.update = async (req, res) => {
   try {
-    // new: true — returns the updated document, not the old one
-    // runValidators: true — checks enum values and required fields on update
-    const patient = await Patient.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const existingPatient = await Patient.findById(req.params.id);
 
-    if (!patient) {
+    if (!existingPatient) {
       return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const isUpdatingBed = Object.prototype.hasOwnProperty.call(req.body, "bedId");
+    const currentBedId = existingPatient.bedId ? String(existingPatient.bedId) : null;
+    const nextBedId = req.body.bedId ? String(req.body.bedId) : null;
+    const isBedChanging = isUpdatingBed && currentBedId !== nextBedId;
+
+    if (isBedChanging && req.body.bedId) {
+      const nextBed = await getBedById(req.body.bedId);
+      ensureBedIsAssignable(nextBed, existingPatient._id);
+    }
+
+    let claimedNewBed = false;
+    if (isBedChanging && req.body.bedId) {
+      await claimBedForPatient(req.body.bedId, existingPatient._id, existingPatient._id);
+      claimedNewBed = true;
+    }
+
+    let patient;
+
+    try {
+      // new: true — returns the updated document, not the old one
+      // runValidators: true — checks enum values and required fields on update
+      patient = await Patient.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true, runValidators: true }
+      );
+    } catch (err) {
+      if (claimedNewBed) {
+        await Bed.findByIdAndUpdate(req.body.bedId, {
+          status: "available",
+          currentPatient: null,
+        });
+      }
+      throw err;
+    }
+
+    if (isBedChanging && existingPatient.bedId) {
+      await Bed.findByIdAndUpdate(existingPatient.bedId, {
+        status: "available",
+        currentPatient: null,
+      });
     }
 
     res.json({
@@ -90,7 +194,7 @@ exports.update = async (req, res) => {
       patient,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
 

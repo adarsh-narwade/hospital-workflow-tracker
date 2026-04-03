@@ -25,10 +25,33 @@ const protect = async (req, res, next) => {
     // .select("-password") means return everything EXCEPT the password
     req.user = await User.findById(decoded.id).select("-password");
 
+    if (!req.user) {
+      return res.status(401).json({ message: "User no longer exists" });
+    }
+
     next(); // Token is valid — pass control to the route handler
   } catch (err) {
     res.status(401).json({ message: "Token invalid or expired" });
   }
+};
+
+const optionalProtect = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next();
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id).select("-password");
+  } catch (err) {
+    req.user = null;
+  }
+
+  next();
 };
 
 // authorize checks the user's ROLE after protect has run
@@ -44,4 +67,4 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize };
+module.exports = { protect, optionalProtect, authorize };

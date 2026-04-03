@@ -1,7 +1,10 @@
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
+import { tokenStorage } from "./tokenStorage";
 
-const BASE_URL = "https://hospital-workflow-tracker.onrender.com/api";
+//const BASE_URL = "https://hospital-workflow-tracker.onrender.com/api";
+
+const BASE_URL = "http://localhost:5000/api";
+
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -9,7 +12,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync("jwt");
+  const token = await tokenStorage.get();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });

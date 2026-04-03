@@ -15,6 +15,15 @@ const generateToken = (userId) => {
 exports.register = async (req, res) => {
   try {
     const { name, email, password, role, department } = req.body;
+    const userCount = await User.countDocuments();
+
+    if (userCount > 0) {
+      if (!req.user || req.user.role !== "admin") {
+        return res.status(403).json({
+          message: "Only admins can create staff accounts",
+        });
+      }
+    }
 
     // Check if this email is already registered
     const existingUser = await User.findOne({ email });

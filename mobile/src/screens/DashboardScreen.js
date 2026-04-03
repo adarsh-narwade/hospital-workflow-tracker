@@ -15,14 +15,15 @@ export default function DashboardScreen({ navigation }) {
 
   const loadStats = async () => {
     try {
-      const [p, b, t] = await Promise.all([
+      const [p, c, b, t] = await Promise.all([
         patientAPI.getAll({ status: "admitted" }),
+        patientAPI.getAll({ status: "critical" }),
         bedAPI.getAll({ status: "available" }),
         taskAPI.getAll({ status: "pending" }),
       ]);
       setStats({
         patients: p.data.length,
-        critical: p.data.filter((x) => x.status === "critical").length,
+        critical: c.data.length,
         beds:     b.data.length,
         tasks:    t.data.length,
       });
